@@ -7,7 +7,7 @@ import date
 #APIから答弁データを収集するためのクラス
 class Sclaping:
 
-    def __init__(self,startdate,enddate,minister,startnum):
+    def __init__(self,startdate,enddate,minister='安倍晋三',startnum=1):
         self.startdate= startdate
         self.enddate= str(enddate)
         # self.meeting=meeting
@@ -33,63 +33,80 @@ class Sclaping:
             print('able to get url')
             return(url,obj)
 
-    
-    def check_next(self,url):
-        tree=etree.parse(url)
-        root=tree.getroot() 
-    #ｘｍｌをツリー状に取得する関数
-        for child in root:
-            if child.tag=='nextRecordPosition':
-                print('check_has_next')
-                return 1
-        print('check_no_next')
-        return 0
-
-    def check_records(self,url):
+    def check_tree(self,url=None,type='nextRecordPostion'):
         tree=etree.parse(url)
         root=tree.getroot()
+
         for child in root:
-            if child.tag=='records':
-                print('check_has_record')
+            if child.tag==type:
+                print('This XML has tag of {}'.format(type))
                 return 1
-        print('check_no_record')
-        return 0        
+            else:
+                ('undifned{}'.format(type))
+                return 0
+
 startdate,enddate=date.Date()
 
     #XMLから必要なデータを書き込む
 def write_data():
     for startday,endday in zip(startdate,enddate):
-        sclaping=Sclaping(startday,endday,'安倍晋三','1')
-        url,obj=sclaping.get_url('1')        
+        
+        sclaping=Sclaping(startday,endday)
+        url,obj=sclaping.get_url(startnum='1')
+
+        print(startday)        
 
         if url==0:
             print('nothingURL')
             continue
-        next_position=sclaping.check_next(url)
-        have_records=sclaping.check_records(url)
+        
+        next_position=sclaping.check_tree(url)
+        have_records=sclaping.check_tree(url,'records')
         #next_positionが存在するときに行う処理
+        XML_tag={
+            'docs_size':0,
+            'start_num':0,
+            'Records':0
+            }
+        
         if next_position:
+            XML_tag['docs_size']=obj.data.numberOfRecords.cdata
+            XML_tag['start_num']=obj.data.nextRecordPosition.cdata
+            XML_tag['Records']=obj.data.records.record
+
+
+           
             print('has_next')
             #nextpositionがあるときは常にループ
 
             while True:
-                print('writing&go_next')
-                print(obj.data.numberOfRecords.cdata, type(obj.data.records.record))
-                start=obj.data.nextRecordPosition.cdata
-                for record in obj.data.records.record:
-                    speechrecord = record.recordData.speechRecord
-                    with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech\{}.txt'.format(startday),'a') as speech:
-                        speech.write(speechrecord.speech.cdata)
-                print(start)
-                url2,obj=sclaping.get_url(start)
+                print('writing&go_next/n'+XML_tag['docs_size'])    
+                # print(obj.data.numberOfRecords.cdata, type(obj.data.records.record))
+
+            for record in obj.data.records.record:
+                
+                speechrecord = record.recordData.speechRecord
+                print(XML_tag['start_num'])
+                print('Aaaa')
+
+                with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech\{}.txt'.format(startday),'a') as speech:
+                    speech.write(speechrecord.speech.cdata)
+
+                
+                url2,obj=sclaping.get_url(XML_tag['start_num'])
                 next_position2=sclaping.check_next(url2)
+                
                 if next_position2==0:
                     print('break!')
                     break
         else:
             if have_records:
-                print('writing&last')
-                print(obj.data.numberOfRecords.cdata, type(obj.data.records.record))
+                XML_tag['docs_size']=obj.data.numberOfRecords.cdata
+                XML_tag['Records']=obj.data.records.record
+
+                print('writing&last/n'+XML_tag['docs_size'])
+                print('bbb')
+
                 for record in obj.data.records.record:
                     speechrecord = record.recordData.speechRecord
                     with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech\{}.txt'.format(startday),'a') as speech:
