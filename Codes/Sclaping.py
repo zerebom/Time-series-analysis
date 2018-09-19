@@ -1,3 +1,7 @@
+#このコードは未完成です。
+#日付ごとに収集するコードをリファクタリングしようとしたけどダメでした
+
+
 import openpyxl#xlsxの操作に用いる
 import urllib#urlを指定の形に変更する
 import untangle#xmlの読み込みに用いる

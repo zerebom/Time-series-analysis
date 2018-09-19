@@ -1,3 +1,8 @@
+# #このコードは動きます。
+# 日付ごとの安倍総理の発言を収集します
+# いずれはクラスで書きたいです
+#コードを実行する度に追加書き込みしてしまうので注意が必要です（97参照
+
 import openpyxl#xlsxの操作に用いる
 import urllib#urlを指定の形に変更する
 import untangle#xmlの読み込みに用いる
@@ -60,13 +65,11 @@ def check_records(url):
     return 0
 #名前のリストを取得
 
-startdate,enddate=date.Date()
-
-
+startdate,enddate=date.Date(2014,2019)
 
 #書き込む操作
 def write_data():
-    #名前でFor文を回す
+    #日付でFor文を回す
     for startday,endday in zip(startdate,enddate):
         url,obj=get_url(1,startday,endday)
         #urlが存在しないなら飛ばす
@@ -90,7 +93,8 @@ def write_data():
 
                     #print(speechrecord.date.cdata,
                     #speechrecord.speech.cdata)
-                    with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech\{}.txt'.format(startday),'a') as speech:
+                    #コードが存在するとき、追加記入になってしまう↓/フォルダを新規製作して対応している
+                    with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech2\{}.txt'.format(startday),'a') as speech:
                         speech.write(speechrecord.speech.cdata)
                 url2,obj=get_url(start,startday,endday)
                 next_position2=check_next(url2)
@@ -105,7 +109,7 @@ def write_data():
 
                     #print(speechrecord.date.cdata,
                     #speechrecord.speech.cdata)
-                    with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech\{}.txt'.format(startday),'a') as speech:
+                    with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech2\{}.txt'.format(startday),'a') as speech:
                         speech.write(speechrecord.speech.cdata)
             else:
                 print('no_record')
