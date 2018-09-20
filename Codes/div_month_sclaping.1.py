@@ -65,7 +65,7 @@ def check_records(url):
     return 0
 #名前のリストを取得
 
-startdate,enddate=date.Date(2014,2019)
+startdate,enddate=date.Date(2012,2019)
 
 #書き込む操作
 def write_data():
@@ -116,6 +116,40 @@ def write_data():
 
 #
 
-write_data()
+# write_data()
 
 #print(get_name(0,'/home/share/Lab/Rep_name.xlsx','Sheet5'))
+
+#最大発言数100で固定する
+def write_data2():
+    #日付でFor文を回す
+    for startday,endday in zip(startdate,enddate):
+        url,obj=get_url(1,startday,endday)
+        #urlが存在しないなら飛ばす
+        if url==0:
+            print('nothingURL')
+            continue
+
+        next_position=check_next(url)
+        have_records=check_records(url)
+        #next_positionが存在するときに行う処理
+        if next_position:
+            print('has_next')
+            print(obj.data.numberOfRecords.cdata)
+            for record in obj.data.records.record:
+                speechrecord = record.recordData.speechRecord
+                #コードが存在するとき、追加記入になってしまう↓/フォルダを新規製作して対応している
+                with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech3\{}.txt'.format(startday),'a') as speech:
+                    speech.write(speechrecord.speech.cdata)
+        else:
+            if have_records:
+                print('writing&last')
+                print(obj.data.numberOfRecords.cdata, type(obj.data.records.record))
+                for record in obj.data.records.record:
+                    speechrecord = record.recordData.speechRecord
+                    with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech3\{}.txt'.format(startday),'a') as speech:
+                        speech.write(speechrecord.speech.cdata)
+            else:
+                print('no_record')
+
+write_data2()                
