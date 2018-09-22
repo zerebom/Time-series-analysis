@@ -65,12 +65,14 @@ def check_records(url):
     return 0
 #名前のリストを取得
 
-startdate,enddate=date.Date(2012,2019)
+startdate,enddate=date.Date(2012,2014)
 
 #書き込む操作
 def write_data():
     #日付でFor文を回す
     for startday,endday in zip(startdate,enddate):
+        file_num=1
+
         url,obj=get_url(1,startday,endday)
         #urlが存在しないなら飛ばす
         if url==0:
@@ -84,6 +86,7 @@ def write_data():
             print('has_next')
             #nextpositionがあるときは常にループ
             while True:
+
                 print('writing&go_next')
                 print(obj.data.numberOfRecords.cdata, type(obj.data.records.record))
                 start=obj.data.nextRecordPosition.cdata
@@ -94,8 +97,11 @@ def write_data():
                     #print(speechrecord.date.cdata,
                     #speechrecord.speech.cdata)
                     #コードが存在するとき、追加記入になってしまう↓/フォルダを新規製作して対応している
-                    with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech2\{}.txt'.format(startday),'a') as speech:
+                    # with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech2\{}.txt'.format(startday),'a') as speech:
+                    with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech4\{}_{}.txt'.format(startday,file_num),'a') as speech:
                         speech.write(speechrecord.speech.cdata)
+                file_num+=1
+
                 url2,obj=get_url(start,startday,endday)
                 next_position2=check_next(url2)
                 if next_position2==0:
@@ -109,14 +115,18 @@ def write_data():
 
                     #print(speechrecord.date.cdata,
                     #speechrecord.speech.cdata)
-                    with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech2\{}.txt'.format(startday),'a') as speech:
+                    # with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech2\{}.txt'.format(startday),'a') as speech:
+                    with open(r'C:\Users\icech\Desktop\share\Lab\2018_09_05\Docments\Abe_speech4\{}_{}.txt'.format(startday,file_num),'a') as speech:
                         speech.write(speechrecord.speech.cdata)
+                file_num+=1
+                        
+
             else:
                 print('no_record')
 
 #
 
-# write_data()
+write_data()
 
 #print(get_name(0,'/home/share/Lab/Rep_name.xlsx','Sheet5'))
 
@@ -124,6 +134,7 @@ def write_data():
 def write_data2():
     #日付でFor文を回す
     for startday,endday in zip(startdate,enddate):
+        
         url,obj=get_url(1,startday,endday)
         #urlが存在しないなら飛ばす
         if url==0:
@@ -152,4 +163,4 @@ def write_data2():
             else:
                 print('no_record')
 
-write_data2()                
+# write_data2()                
