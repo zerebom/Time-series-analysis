@@ -1,7 +1,8 @@
 #このコードは未完成です。
 #日付ごとに収集するコードをリファクタリングしようとしたけどダメでした
 
-
+import datetime as time
+import calendar
 import openpyxl#xlsxの操作に用いる
 import urllib#urlを指定の形に変更する
 import untangle#xmlの読み込みに用いる
@@ -10,23 +11,16 @@ import date
 
 #APIから答弁データを収集するためのクラス
 class Sclaping:
-
-    def __init__(self,startdate,enddate,minister='安倍晋三',startnum=1):
-        self.startdate= startdate
-        self.enddate= str(enddate)
-        # self.meeting=meeting
-        self.minister=minister
-        self.startnum=startnum
-    
+    def __init__(self):
+     
     # URLとXMLをAPIから取得するメソッド
-    def get_url(self,startnum):
+    def get_url(self,startnum=1,minister='安部晋三',startdate,enddate):
 
         url = 'http://kokkai.ndl.go.jp/api/1.0/speech?'+urllib.parse.quote('startRecord='+startnum
-        +'&maximumRecords=100&speaker='+ self.minister
+        +'&maximumRecords=100&speaker='+ minister
         # + '&nameOfMeeting='+ self.meeting 
-        + '&from=' + self.startdate 
-        + '&until='+ self.enddate) 
-
+        + '&from=' + startdate 
+        + '&until='+ enddate) 
         try:
             obj = untangle.parse(url)
         #tryでエラーが出た時に、行う分岐、エラー文を読み込む
@@ -36,6 +30,26 @@ class Sclaping:
         else:
             print('able to get url')
             return(url,obj)
+
+    def import_excel(path,column,sheet):
+        import_list=[]
+
+        workbook=openpyxl.load_workbook(path)
+        sheet=workbook.get_sheet_by_name(sheet)
+        
+        for cell_obj in list(sheet.columns)[cell_obj.value]:
+            import_list.append(cell_obj.value)
+        
+        return import_list
+
+    def Date(start_year,end_year):
+        for year in range(start_year,end_year): 
+            for month in range(1,13):
+                start_date.append(str(time.date(year,month,1)))
+                last_day = calendar.monthrange(year, month)[1]
+                end_date.append(str(time.date(year,month,last_day)))
+        return(start_date,end_date) 
+
 
     def check_tree(self,url=None,type='nextRecordPostion'):
         tree=etree.parse(url)
@@ -78,8 +92,6 @@ def write_data():
             XML_tag['start_num']=obj.data.nextRecordPosition.cdata
             XML_tag['Records']=obj.data.records.record
 
-
-           
             print('has_next')
             #nextpositionがあるときは常にループ
 
